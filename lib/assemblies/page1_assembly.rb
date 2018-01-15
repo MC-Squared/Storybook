@@ -6,29 +6,22 @@ class Page1AssemblyAssembly < SolidRuby::Assembly
   # (will still generate 'show')
   skip :output
 
-  def layer(obj, layer)
-    obj.translate(z: (layer-1) * $layer_z)
+  view :layer1
+  view :layer2
+  view :layer3
+  view :layer4
+  view :layer5
+  view :layer6
+  view :layer7
+  view :layer8
+  view :layer9
+
+  def position_layer(obj, layer)
+    obj.translate(z: (layer-1) * $layer_z * 10)
   end
 
-  def part(show)
-    res = layer(PageLayer.new, 1)
-
-    res += layer(PageLayer.new
-        .debug, 2)
-
-    res += layer(PageLayer.new, 3)
-
-    res += layer(PageLayer.new.ridge, 4)
-
-    res += layer(PageLayer.new.ridge, 5)
-
-    res += layer(PageLayer.new.ridge, 6)
-
-    res += layer(PageLayer.new, 7)
-
-    res += layer(PageLayer.new, 8)
-
-    res += layer(PageLayer.new, 9)
+  def layer1
+    res = PageLayer.new
 
     $page_text[0].each_with_index do |t, i|
       res -= text(text: t, size: 8, valign: "top", halign: "left")
@@ -40,15 +33,28 @@ class Page1AssemblyAssembly < SolidRuby::Assembly
         #.color("Black")
     end
 
-    window = cube($page_x - $page_border*2.0, $page_y - $page_border*2.0, $layer_z*2 + 30)
-      .center_xy
-      .fillet(edges: :vertical, r: 10)
+    res
+  end
 
-    res -= layer(window, 6)
-      .translate(z: -$layer_z)
+  def layer2
+    PageLayer.new.debug
+  end
 
-    # res += cylinder(d: 40, h: $layer_z*2)
-    #   .translate(y: -25, z: 30)
+  def layer3
+    res = PageLayer.new
+
+    seesaw_pin = cylinder(d: 7, h: $layer_z*4.0 + 5)
+
+    res += seesaw_pin
+
+    slide_track = Dovetail.new($page_y - $page_border*4.0, false)
+      .translate(x: ($page_x - $page_border)/2.0 - $page_border*2.5)#, y: -($page_y - $page_border*4.0)/2.0)
+
+    res -= slide_track
+  end
+
+  def layer4
+    res = PageLayer.new.ridge
 
     seesaw = cube($page_x - $page_border*3.0, 10, $layer_z*2.0)
         .center_xy
@@ -63,21 +69,68 @@ class Page1AssemblyAssembly < SolidRuby::Assembly
       .translate(x: $page_x/2.0 - $page_border*3.0, z: -0.01)
       .rotate(z: 25)
 
-    res += layer(seesaw, 5)
+    res += seesaw
+  end
 
-    seesaw_pin = cylinder(d: 7, h: $layer_z*4.0 + 5)
+  def layer5
+    PageLayer.new.ridge
+  end
 
-    res += layer(seesaw_pin, 4)
+  def layer6
+    PageLayer.new.ridge
+  end
+
+  def layer7
+    PageLayer.new.ridge
+  end
+
+  def layer8
+    PageLayer.new.ridge
+  end
+
+  def layer9
+    PageLayer.new.ridge
+  end
+
+  def part(show)
+    res = position_layer(layer1, 1)
+
+    res += position_layer(layer2, 2)
+
+    res += position_layer(layer3, 3)
+
+    res += position_layer(layer4, 4)
+
+    res += position_layer(layer5, 5)
+
+    res += position_layer(layer6, 6)
+
+    res += position_layer(layer7, 7)
+
+    res += position_layer(layer8, 8)
+
+    res += position_layer(layer9, 9)
+
+
+    # window = cube($page_x - $page_border*2.0, $page_y - $page_border*2.0, $layer_z*2 + 30)
+    #   .center_xy
+    #   .fillet(edges: :vertical, r: 10)
+    #   .debug
+    #
+    # res -= position_layer(window, 6)
+    #   .translate(z: -$layer_z)
+
+    # res += cylinder(d: 40, h: $layer_z*2)
+    #   .translate(y: -25, z: 30)
+
+
 
     slide = long_slot(h: $layer_z*2.0, d: 4, l: $page_y - $page_border*4.0)
       .rotate(z: 90)
       .translate(x: ($page_x - $page_border)/2.0 - $page_border*2.5, y: -($page_y - $page_border*4.0)/2.0)
 
-    #res += layer(slide, 6)
+    res += position_layer(slide, 6)
 
-    slide_track = Dovetail.new($page_y - $page_border*4.0, false)
-      .translate(x: ($page_x - $page_border)/2.0 - $page_border*2.5)#, y: -($page_y - $page_border*4.0)/2.0)
-
-    res -= layer(slide_track, 3)
+    res
   end
 end
